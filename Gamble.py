@@ -1,4 +1,4 @@
-import random, os, time
+import random, os, customtkinter
 
 direct = "GAMBLINGLOG"
 filed = "gamblinglog.txt"
@@ -7,14 +7,14 @@ if not os.path.exists(direct):
 full_path = os.path.join(direct, filed)
 
 class Account:
-    def __init__(self, owner, money):
-        self.owner = owner
+    def __init__(self, money):
         self.money = money
 
     def gamble(self, amount):
         self.money -= amount
         print(f"Gambled ${amount}")
-        global gambled, jackpot, lottery
+        global gambled, jackpot, lottery, lost
+        lost = False
         gambled = random.randint(1, 4)
         jackpot = random.randint(1, 15)
         lottery = random.randint(1, 50)
@@ -22,7 +22,7 @@ class Account:
             self.money += amount * 2
             print("You won your gamble.")
         else:
-            print("You lost your gamble.")
+            print("You lost the gamble.")
         if jackpot == 1:
             self.money += 9999
             print("YOU JUST HIT THE JACKPOT!!!")
@@ -31,9 +31,12 @@ class Account:
         if lottery == 1:
             self.money += 999999
             print("HOLY SMOKES, YOU HIT THE LOTTERY!!!!!")
-        return jackpot, gambled, lottery
-    def check(self):
-        print(f"Your money is: ${self.money}")
+        else:
+            print("You've lost the lottery.")
+        if amount >= 4999:
+            lost == True
+            self.money -= 999
+        return jackpot, gambled, lottery, lost
 
     def write(self):
         with open(full_path, "a") as file:
@@ -44,12 +47,37 @@ class Account:
                 file.write("You won the prize. (gambled amount * 2)\n")
             if lottery == 1:
                 file.write("YOU HIT THE LOTTERY! (+999999)\n")
-shuffle = random.randint(1000, 5000)
-shuffle2 = random.randint(500, 1000)
-account = Account("Lettuce", shuffle)
+            if lost == True:
+                file.write(f"You lost it all. (-999)\n")
 
-account.check()
-account.gamble(shuffle2)
-account.check()
-account.write()
-time.sleep(60000)
+def run_gamble():
+    amount = random.randint(1, 1000)
+    print(amount)
+    bigamount = random.randint(1, 50000)
+    if amount <= 500:
+        account.gamble(bigamount)
+    account.gamble(amount)
+
+    label_var.configure(text=f"Your money is now ${account.money}")
+    account.write()
+
+def app():
+    global label_var
+    global account
+
+    root = customtkinter.CTk()
+    root.title("Gambling")
+    root.geometry("500x400")
+
+    starting_money = random.randint(1000, 5000)
+    account = Account(starting_money)
+
+    label_var = customtkinter.CTkLabel(root, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
+    label_var.pack(pady=20)
+
+    gamble_button = customtkinter.CTkButton(root, text="Gamble", command=run_gamble)
+    gamble_button.pack(pady=20)
+
+    root.mainloop()
+
+app()
