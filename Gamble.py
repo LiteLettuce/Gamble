@@ -1,4 +1,4 @@
-import random, os, customtkinter
+import random, os, customtkinter, time
 
 direct = "GAMBLINGLOG"
 filed = "gamblinglog.txt"
@@ -13,46 +13,48 @@ class Account:
     def gamble(self, amount):
         self.money -= amount
         print(f"Gambled ${amount}")
-        global gambled, jackpot, lottery, lost
+        global gambled, jackpot, lottery, lost, debt
         lost = False
-        gambled = random.randint(1, 4)
+        debt = False
+        lottery = random.randint(1, 70)
         jackpot = random.randint(1, 15)
-        lottery = random.randint(1, 50)
+        gambled = random.randint(1, 4)
         if gambled == 1:
             self.money += amount * 2
-            print("You won your gamble.")
-        else:
-            print("You lost the gamble.")
         if jackpot == 1:
             self.money += 9999
-            print("YOU JUST HIT THE JACKPOT!!!")
-        else:
-            print("You've lost the jackpot.")
         if lottery == 1:
             self.money += 999999
-            print("HOLY SMOKES, YOU HIT THE LOTTERY!!!!!")
-        else:
-            print("You've lost the lottery.")
         if amount >= 4999:
             lost == True
             self.money -= 999
-        return jackpot, gambled, lottery, lost
+            shuffle = random.randint(1, 4)
+            if shuffle == 1:
+                debt == True
+                self.money -= 9999
+        if GAMBLE == True:
+            self.money -= 99999
+        return jackpot, gambled, lottery, lost, debt
 
     def write(self):
         with open(full_path, "a") as file:
-            file.write(f"Money left over is ${self.money}\n")
-            if jackpot == 1:
-                file.write("You also won the jackpot. (+9999)\n")
-            if gambled == 1:
-                file.write("You won the prize. (gambled amount * 2)\n")
-            if lottery == 1:
-                file.write("YOU HIT THE LOTTERY! (+999999)\n")
-            if lost == True:
-                file.write(f"You lost it all. (-999)\n")
+            if GAMBLE == True:
+                return
+            else:
+                file.write(f"Money left over is ${self.money}\n")
+                if jackpot == 1:
+                    file.write("You also won the jackpot. (+9999)\n")
+                if gambled == 1:
+                    file.write("You won the prize. (gambled amount * 2)\n")
+                if lottery == 1:
+                    file.write("YOU HIT THE LOTTERY! (+999999)\n")
+                if lost == True:
+                    file.write(f"You lost it all. (-999)\n")
+                if debt == True:
+                    file.write(f"You are probably in debt. (-9999)\n")
 
 def run_gamble():
     amount = random.randint(1, 1000)
-    print(amount)
     bigamount = random.randint(1, 50000)
     if amount <= 500:
         account.gamble(bigamount)
@@ -60,6 +62,17 @@ def run_gamble():
 
     label_var.configure(text=f"Your money is now ${account.money}")
     account.write()
+def ruinyourlife():
+    global GAMBLE
+    GAMBLE = False
+    label_var.configure(text="Brace for impact")
+    GAMBLE = True
+    for i in range(50):
+        run_gamble()
+        time.sleep(0)
+        i + 1
+    time.sleep(0.05)
+    GAMBLE = False
 
 def app():
     global label_var
@@ -77,7 +90,8 @@ def app():
 
     gamble_button = customtkinter.CTkButton(root, text="Gamble", command=run_gamble)
     gamble_button.pack(pady=20)
+    gamble2_button = customtkinter.CTkButton(root, text="GO BIG OR GO HOME!", command=ruinyourlife)
+    gamble2_button.pack(pady=20)
 
     root.mainloop()
-
 app()
