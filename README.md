@@ -6,4 +6,6 @@ This works on Windows, Mac OS, and Linux (Mac OS and Linux aren't confirmed but 
 run the python file.)
 
 also you can win, hit a jackpot, or hit the lottery.
-you can also lose it all (totally not buggy)
+you can also lose it all
+
+Currently trying to add more features like maybe even idling
