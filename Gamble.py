@@ -1,6 +1,7 @@
 import random, os, customtkinter, time
 #declare variables because python hates me
 GAMBLE = False
+GAMBLE2 = False
 lottery = random.randint(1, 70)
 jackpot = random.randint(1, 15)
 gambled = random.randint(1, 4)
@@ -28,13 +29,8 @@ class Account:
             self.money += 9999
         if lottery == 1:
             self.money += 999999
-        if amount >= 4999:
-            self.money -= 99
         if GAMBLE == True:
-            self.money -= 99999
-            shuffle2 = random.randint(1, 4)
-            if shuffle2 == 1:
-                self.money += 99999
+            self.money -= 20
 
     def write(self):
         with open(full_path, "a") as file:
@@ -51,10 +47,14 @@ class Account:
 
 def run_gamble():
     global GAMBLE
-    amount = random.randint(1, 1000)
-    bigamount = random.randint(1, 500000)
-    if amount <= 750:
+    amount = random.randint(1, 100)
+    bigamount = random.randint(1, 2500)
+    shuffle4 = random.randint(1, 6)
+    shuffle5 = random.randint(1, 6)
+    if shuffle5 == 1 and shuffle4 == 1:
         account.gamble(bigamount)
+    else:
+        account.gamble(amount)
     label_var.configure(text=f"Your money is now ${account.money}")
     account.write()
 def ruinyourlife():
@@ -63,16 +63,16 @@ def ruinyourlife():
     for i in range(50):
         run_gamble()
         i + 1
-    time.sleep(0.05)
     GAMBLE = False
 def loop():
-    global GAMBLE
+    global GAMBLE, GAMBLE2
     GAMBLE = True
+    GAMBLE2 = True
     for i in range(500):
         run_gamble()
         i + 1
-    time.sleep(0.05)
     GAMBLE = False
+    GAMBLE2 = False
 
 def app():
     global label_var
@@ -81,6 +81,7 @@ def app():
     root = customtkinter.CTk()
     root.title("Gambling")
     root.geometry("500x400")
+    root.resizable(False, False)
 
     starting_money = random.randint(1000, 5000)
     account = Account(starting_money)
