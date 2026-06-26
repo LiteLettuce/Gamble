@@ -1,11 +1,4 @@
 import random, os, customtkinter, time
-#declare variables because python hates me
-GAMBLE = False
-GAMBLE2 = False
-lottery = random.randint(1, 70)
-jackpot = random.randint(1, 15)
-gambled = random.randint(1, 4)
-MILLIONARE = random.randint(1, 1000)
 
 direct = "GAMBLINGLOG"
 filed = "gamblinglog.txt"
@@ -20,17 +13,20 @@ class Account:
     def gamble(self, amount):
         self.money -= amount
         print(f"Gambled ${amount}")
-        global gambled, jackpot, lottery, MILLIONARE, GAMBLE
-        if MILLIONARE == 1:
-            self.money += 9999999
+        global gambled, jackpot, lottery
+        gambled = random.randint(1, 4)
+        jackpot = random.randint(1, 100)
+        lottery = random.randint(1, 1000)
         if gambled == 1:
             self.money += amount * 2
         if jackpot == 1:
             self.money += 9999
         if lottery == 1:
             self.money += 999999
-        if GAMBLE == True:
-            self.money -= 20
+        if random.randint(1, 100) == 1:
+            self.money -= 99
+        if self.money <= 50000:
+            self.money += 500
 
     def write(self):
         with open(full_path, "a") as file:
@@ -41,38 +37,24 @@ class Account:
                 file.write("You won the prize. (gambled amount * 2)\n")
             if lottery == 1:
                 file.write("YOU HIT THE LOTTERY! (+999999)\n")
-            if MILLIONARE == 1:
-                file.write(f"YOU ARE THE BEST GAMBLER TO TOUCH THE PLANET!!!!!(+9999999)\n")
-                time.sleep(3)
 
 def run_gamble():
-    global GAMBLE
-    amount = random.randint(1, 100)
-    bigamount = random.randint(1, 2500)
-    shuffle4 = random.randint(1, 6)
-    shuffle5 = random.randint(1, 6)
-    if shuffle5 == 1 and shuffle4 == 1:
+    amount = random.randint(1, 1000)
+    bigamount = random.randint(1, 10000)
+    if random.randint(1, 4) <= 1:
         account.gamble(bigamount)
     else:
         account.gamble(amount)
     label_var.configure(text=f"Your money is now ${account.money}")
     account.write()
 def ruinyourlife():
-    global GAMBLE
-    GAMBLE = True
     for i in range(50):
         run_gamble()
         i + 1
-    GAMBLE = False
 def loop():
-    global GAMBLE, GAMBLE2
-    GAMBLE = True
-    GAMBLE2 = True
-    for i in range(500):
+    for i in range(100):
         run_gamble()
         i + 1
-    GAMBLE = False
-    GAMBLE2 = False
 
 def app():
     global label_var
@@ -93,7 +75,7 @@ def app():
     gamble_button.pack(pady=20)
     gamble2_button = customtkinter.CTkButton(root, text="GO BIG OR GO HOME! (+50)", command=ruinyourlife)
     gamble2_button.pack(pady=20)
-    gamble3_button = customtkinter.CTkButton(root, text="GAMBLING IS MY LIFE FORCE!!! (+500)", command=loop)
+    gamble3_button = customtkinter.CTkButton(root, text="GAMBLING IS MY LIFE FORCE!!! (+100)", command=loop)
     gamble3_button.pack(pady=20)
     root.mainloop()
 app()
