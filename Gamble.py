@@ -14,6 +14,7 @@ class Account:
         self.gambled = 0
         self.jackpot = 0
         self.lottery = 0
+        self.takeout = 0
 
     def gamble(self, amount):
         self.money -= amount
@@ -33,17 +34,17 @@ class Account:
         if self.money <= 50000:
             self.money += 500
         if self.money <= -9999:
-            self.lost == True
+            self.lost = True
             self.money += amount 
     def loan(self, amount):
-        self.money += amount
-        label_var.configure(text=f"Your money is now ${self.money}")
-        if self.money >= 0:
-            return
-        elif self.gambled == 1:
-            self.money -= 5000
-            label_var.configure(text=f"Paid intrest (-5000)\n Your money is now ${self.money}")
-            self.loanmoney = True
+        if self.takeout >= 5:
+            label_var.configure(text="You've taken a loan too many times.")
+        else:
+            self.money += amount
+            self.takeout += 1
+            label_var.configure(text=f"Your money is now ${self.money}")
+        print(f"Got loan of {amount}")
+        print(self.takeout)
 
     def write(self):
         with open(full_path, "a") as file:
@@ -91,16 +92,20 @@ def app():
     starting_money = random.randint(1000, 5000)
     account = Account(starting_money)
 
-    label_var = customtkinter.CTkLabel(root, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
+    theme = customtkinter.CTkFrame(root, width=501, height=401, fg_color="#153D72")
+    theme.pack()
+    theme.pack_propagate(False)
+
+    label_var = customtkinter.CTkLabel(theme, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
     label_var.pack(pady=20)
 
-    gamble_button = customtkinter.CTkButton(root, text="Gamble", command=run_gamble)
+    gamble_button = customtkinter.CTkButton(theme, text="Gamble", fg_color="#094E18", corner_radius=100, command=run_gamble)
     gamble_button.pack(pady=20)
-    gamble2_button = customtkinter.CTkButton(root, text="GO BIG OR GO HOME! (+50)", command=ruinyourlife)
+    gamble2_button = customtkinter.CTkButton(theme, text="GO BIG OR GO HOME! (+50)", fg_color="#0084FF", corner_radius=100, command=ruinyourlife)
     gamble2_button.pack(pady=20)
-    gamble3_button = customtkinter.CTkButton(root, text="GAMBLING IS MY LIFE FORCE!!! (+100)", command=loop)
+    gamble3_button = customtkinter.CTkButton(theme, text="GAMBLING IS MY LIFE FORCE!!! (+100)", fg_color="#7F0D8A", corner_radius=100, command=loop)
     gamble3_button.pack(pady=20)
-    loan_button = customtkinter.CTkButton(root, text="Click to get a loan", command=bypass)
+    loan_button = customtkinter.CTkButton(theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, command=bypass)
     loan_button.pack(pady=20)
     root.mainloop()
 app()
