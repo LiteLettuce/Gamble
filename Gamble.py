@@ -53,6 +53,13 @@ class Account:
                 self.lost = False
     def debt(self):
         self.cap = True
+    def holygamble(self):
+        if self.cap == True:
+            for i in range(250):
+                run.run_gamble()
+                i + 1
+        else:
+            label_var.configure(text="Must need to remove debt limits first.")
     def loan(self, amount):
         self.loanmoney = False
         if self.takeout >= 5:
@@ -134,18 +141,20 @@ def app():
     label_var.pack(pady=20)
 
     gamble_button = customtkinter.CTkButton(theme, text="Gamble", fg_color="#094E18", corner_radius=100, hover_color="#042E0D", command=run.run_gamble)
-    gamble_button.pack(pady=15)
+    gamble_button.pack(pady=12.5)
     gamble2_button = customtkinter.CTkButton(theme, text="GO BIG OR GO HOME! (+10)", fg_color="#0084FF", hover_color="#025DB3", corner_radius=100, command=run.ruinyourlife)
-    gamble2_button.pack(pady=15)
+    gamble2_button.pack(pady=12.5)
     gamble3_button = customtkinter.CTkButton(theme, text="GAMBLING IS MY LIFE FORCE!!! (+50)", fg_color="#7F0D8A", hover_color="#4E0855", corner_radius=100, command=run.loop)
-    gamble3_button.pack(pady=15)
+    gamble3_button.pack(pady=12.5)
+    gamble4_button = customtkinter.CTkButton(theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=account.holygamble)
+    gamble4_button.pack(pady=12.5)
     loan_button = customtkinter.CTkButton(theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, hover_color="#067C06", command=run.bypass)
-    loan_button.pack(pady=15)
+    loan_button.pack(pady=12.5)
     check_button = customtkinter.CTkButton(theme, text="Click to see values of winning", fg_color="#FF7300", hover_color="#AD4E00", corner_radius=100, command=run.values)
-    check_button.pack(pady=15)
+    check_button.pack(pady=12.5)
     logs_button = customtkinter.CTkButton(theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
-    logs_button.pack(pady=15)
+    logs_button.pack(pady=12.5)
     debt_button = customtkinter.CTkButton(theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#000000", corner_radius=100, command=account.debt)
-    debt_button.pack(pady=15)
+    debt_button.pack(pady=12.5)
     root.mainloop()
 app()
