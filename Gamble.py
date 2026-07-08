@@ -10,21 +10,21 @@ class Account:
     def __init__(self, money):
         self.money = money
         self.lost = False
-        global factor
-        factor = 0
+        self.check = 0
         self.cap = False
         self.gambled = 0
         self.jackpot = 0
         self.lottery = 0
         self.takeout = 0
-        factor = random.randint(1, 6)
+        self.factor = random.randint(1, 6)
 
     def gamble(self, amount):
-        if factor == 1:
+        self.check = 1
+        if self.factor == 1:
             self.gambled = random.randint(1, 6)
             self.jackpot = random.randint(1, 100)
             self.lottery = random.randint(1, 1000)
-        elif factor == 6:
+        elif self.factor == 6:
             self.gambled = random.randint(1, 3)
             self.jackpot = random.randint(1, 50)
             self.lottery = random.randint(1, 500)
@@ -32,7 +32,7 @@ class Account:
             self.gambled = random.randint(1, 4)
             self.jackpot = random.randint(1, 70)
             self.lottery = random.randint(1, 750)
-        if self.lost == True and cap == False:
+        if self.lost == True and self.cap == False:
             label_var.configure(text=f"Your in too much debt to gamble.\n Your money is {self.money}")
         else:
             self.money -= amount
@@ -106,9 +106,9 @@ class Rerun():
     def bypass(self):
         account.loan(random.randint(1, 10000))
     def values(self):
-        if factor == 1:
+        if account.factor == 1:
             label_var.configure(text="Values are lower than normal.")
-        elif factor == 6:
+        elif account.factor == 6:
             label_var.configure(text="Values are higher than normal.")
         else:
             label_var.configure(text="Values are the normal.")
@@ -117,13 +117,36 @@ class Rerun():
         path = os.path.join(direc, "GAMBLINGLOG")
         path = os.path.realpath(path)
         os.startfile(path)
-        
-def app():
-    global label_var, account, run, cap
+    def read(self):
+        if account.check == 1:
+            with open(full_path, "r") as filing:
+                app2()
+        else:
+            label_var.configure(text="Need to gamble first")
+def app2():
+    with open(full_path, "r") as filing:
+        content = filing.read()
 
+    window2 = customtkinter.CTkToplevel()
+    window2.title("Gambling History")
+    window2.geometry("500x540")
+    window2.resizable(False, False)
+
+    theme2 = customtkinter.CTkFrame(window2, width=501, height=541, fg_color="#235DA8")
+    theme2.pack()
+    theme2.pack_propagate(False)
+
+    textbox = customtkinter.CTkTextbox(theme2, width=460, height=480, fg_color="#235DA8", font=("Times New Roman", 13))
+    textbox.pack(padx=10, pady=10)
+    textbox.insert("0.0", content)
+    textbox.configure(state="disabled")
+def app():
+    global label_var, account, run, cap, read_button, counter
+    
+    counter = 0
     root = customtkinter.CTk()
     root.title("Gambling")
-    root.geometry("500x500")
+    root.geometry("500x540")
     root.resizable(False, False)
 
     if random.randint(1, 2) == 1:
@@ -133,12 +156,12 @@ def app():
     account = Account(starting_money)
     run = Rerun()
 
-    theme = customtkinter.CTkFrame(root, width=501, height=501, fg_color="#235DA8")
+    theme = customtkinter.CTkFrame(root, width=501, height=541, fg_color="#235DA8")
     theme.pack()
     theme.pack_propagate(False)
 
     label_var = customtkinter.CTkLabel(theme, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
-    label_var.pack(pady=20)
+    label_var.pack(pady=12.5)
 
     gamble_button = customtkinter.CTkButton(theme, text="Gamble", fg_color="#094E18", corner_radius=100, hover_color="#042E0D", command=run.run_gamble)
     gamble_button.pack(pady=12.5)
@@ -154,7 +177,9 @@ def app():
     check_button.pack(pady=12.5)
     logs_button = customtkinter.CTkButton(theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
     logs_button.pack(pady=12.5)
-    debt_button = customtkinter.CTkButton(theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#000000", corner_radius=100, command=account.debt)
+    debt_button = customtkinter.CTkButton(theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#0C817B", corner_radius=100, command=account.debt)
     debt_button.pack(pady=12.5)
+    read_button = customtkinter.CTkButton(theme, text="Click to view history", fg_color="#9EA011", hover_color="#89B413", corner_radius=100, command=run.read)
+    read_button.pack(pady=12.5)
     root.mainloop()
 app()
