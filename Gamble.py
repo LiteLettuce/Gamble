@@ -84,7 +84,7 @@ class Account:
             lines_added += 1
         if self.lost == True:
             entry += "Your in debt, congrats\n"
-            lines_added += 1
+            lines_added += 1 
         with open(full_path, "a") as file:
             file.write(entry)
         run.counter += lines_added
