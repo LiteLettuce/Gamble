@@ -53,13 +53,6 @@ class Account:
                 self.lost = False
     def debt(self):
         self.cap = True
-    def holygamble(self):
-        if self.cap == True:
-            for i in range(250):
-                run.run_gamble()
-                i + 1
-        else:
-            label_var.configure(text="Must need to remove debt limits first.")
     def loan(self, amount):
         self.loanmoney = False
         if self.takeout >= 5:
@@ -73,19 +66,31 @@ class Account:
         print(f"Got loan of {amount}")
 
     def write(self):
+        run.check()
+        if run.counter >= 500:
+            with open(full_path, "w") as file:
+                file.truncate()
+            run.counter = 0
+        entry = f"On {datetime.datetime.now()}:\nMoney left over is ${self.money}\n"
+        lines_added = 2
+        if self.jackpot == 1:
+            entry += "You also won the jackpot. (+9999)\n"
+            lines_added += 1
+        if self.gambled == 1:
+            entry += "You won the prize. (gambled amount * 2)\n"
+            lines_added += 1
+        if self.lottery == 1:
+            entry += "YOU HIT THE LOTTERY! (+999999)\n"
+            lines_added += 1
+        if self.lost == True:
+            entry += "Your in debt, congrats\n"
+            lines_added += 1
         with open(full_path, "a") as file:
-            file.write(f"On {datetime.datetime.now()}:\nMoney left over is ${self.money}\n")
-            if self.jackpot == 1:
-                file.write("You also won the jackpot. (+9999)\n")
-            if self.gambled == 1:
-                file.write("You won the prize. (gambled amount * 2)\n")
-            if self.lottery == 1:
-                file.write("YOU HIT THE LOTTERY! (+999999)\n")
-            if self.lost == True:
-                file.write("Your in debt, congrats\n")
-class Rerun():
+            file.write(entry)
+        run.counter += lines_added
+class Rerun(): 
     def __init__(self):
-        pass
+        self.counter = 0    
     def run_gamble(self):
         self.amount = random.randint(1, 1000)
         self.bigamount = random.randint(1, 10000)
@@ -103,6 +108,13 @@ class Rerun():
         for i in range(50):
             run.run_gamble()
             i + 1
+    def holygamble(self):
+        if account.cap == True:
+            for i in range(250):
+                run.run_gamble()
+                i + 1
+        else:
+            label_var.configure(text="Must need to remove debt limits first.")
     def bypass(self):
         account.loan(random.randint(1, 10000))
     def values(self):
@@ -119,10 +131,17 @@ class Rerun():
         os.startfile(path)
     def read(self):
         if account.check == 1:
-            with open(full_path, "r") as filing:
+            with open(full_path, "r") as file:
                 app2()
         else:
             label_var.configure(text="Need to gamble first")
+    def check(self):
+        if self.counter is None:
+            self.counter = 0
+            if os.path.exists(full_path):
+                with open(full_path, "rb") as file:
+                    self.counter = sum(1 for _ in file)
+        return self.counter
 def app2():
     with open(full_path, "r") as filing:
         content = filing.read()
@@ -134,16 +153,15 @@ def app2():
 
     theme2 = customtkinter.CTkFrame(window2, width=501, height=541, fg_color="#235DA8")
     theme2.pack()
-    theme2.pack_propagate(False)
+    theme2.pack_propagate(False  )
 
     textbox = customtkinter.CTkTextbox(theme2, width=460, height=480, fg_color="#235DA8", font=("Times New Roman", 13))
     textbox.pack(padx=10, pady=10)
     textbox.insert("0.0", content)
     textbox.configure(state="disabled")
 def app():
-    global label_var, account, run, cap, read_button, counter
+    global label_var, account, run, cap, read_button
     
-    counter = 0
     root = customtkinter.CTk()
     root.title("Gambling")
     root.geometry("500x540")
@@ -169,7 +187,7 @@ def app():
     gamble2_button.pack(pady=12.5)
     gamble3_button = customtkinter.CTkButton(theme, text="GAMBLING IS MY LIFE FORCE!!! (+50)", fg_color="#7F0D8A", hover_color="#4E0855", corner_radius=100, command=run.loop)
     gamble3_button.pack(pady=12.5)
-    gamble4_button = customtkinter.CTkButton(theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=account.holygamble)
+    gamble4_button = customtkinter.CTkButton(theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=run.holygamble)
     gamble4_button.pack(pady=12.5)
     loan_button = customtkinter.CTkButton(theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, hover_color="#067C06", command=run.bypass)
     loan_button.pack(pady=12.5)

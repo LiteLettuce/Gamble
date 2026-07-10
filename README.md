@@ -13,4 +13,4 @@ Make sure to clear it out once in a while as it can become massive.
 also you can win, hit a jackpot, or hit the lottery.
 you can also lose it all and take loans.
 
-Currently trying to add more features, still a WIP
+App is now in V1.0
