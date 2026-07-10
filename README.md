@@ -9,4 +9,4 @@ This is known to work on Windows, not known about any other OS tho
 also you can win, hit a jackpot, or hit the lottery.
 you can also lose it all and take loans.
 
-App is now in V1.0
+App is now in V1.05
