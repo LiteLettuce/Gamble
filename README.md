@@ -3,10 +3,11 @@ IMPORTANT NOTICE: THIS IS NOT A GAMBLING APPLICATION, NOR IT IS RELATED TO ONE. 
 READ BEFORE PLAYING:
 
 To run:
-Open the EXE/install python and run the python file.
+Open the EXE/install python and run the python file. (Note that opening EXE will take ~15 seconds to open.)
 This is known to work on Windows, not known about any other OS tho
 
 also you can win, hit a jackpot, or hit the lottery.
 you can also lose it all and take loans.
 
-App is now in V1.05
+App is now in V1.1 pre-alpha
+Note that in V1.1 pre-alpha, you can only custom gamble using amounts.

@@ -17,6 +17,7 @@ class Account:
         self.lottery = 0
         self.takeout = 0
         self.factor = random.randint(1, 6)
+        self.bypassed = False
 
     def gamble(self, amount):
         self.check = 1
@@ -51,6 +52,12 @@ class Account:
                 self.lost = True
             if self.cap == True:
                 self.lost = False
+    
+    def gamblecustom(self):
+        self.bypassed = True
+        self.cap = True
+        account.gamble(app.value1)
+        app.label2_var.configure(text=f"Your money is now ${int(account.money)}")
 
     def debt(self):
         self.cap = True
@@ -102,7 +109,10 @@ class Rerun():
             account.gamble(self.bigamount)
         else:
             account.gamble(self.amount)
-        app.label_var.configure(text=f"Your money is now ${account.money}")
+        if account.bypassed == True:
+            return 0
+        else:
+            app.label_var.configure(text=f"Your money is now ${account.money}")
         account.write()
 
     def ruinyourlife(self):
@@ -150,19 +160,20 @@ class Rerun():
                 with open(full_path, "rb") as file:
                     self.counter = sum(1 for _ in file)
         return self.counter
-
+    def custombuilder(self):
+        app.Builder()
 
 class Application:
     def __init__(self):
         self.root = customtkinter.CTk()
-        self.theme = customtkinter.CTkFrame(self.root, width=501, height=541, fg_color="#235DA8")
+        self.theme = customtkinter.CTkFrame(self.root, width=501, height=601, fg_color="#235DA8")
         self.theme.pack()
         self.theme.pack_propagate(False)
         self.label_var = customtkinter.CTkLabel(self.theme, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
 
     def App(self):
         self.root.title("Gambling")
-        self.root.geometry("500x540")
+        self.root.geometry("500x600")
         self.root.resizable(False, False)
         self.Widgets()
         self.root.mainloop()
@@ -175,6 +186,7 @@ class Application:
         window2.title("Gambling History")
         window2.geometry("500x540")
         window2.resizable(False, False)
+        window2.grab_set()
 
         theme2 = customtkinter.CTkFrame(window2, width=501, height=541, fg_color="#235DA8")
         theme2.pack()
@@ -190,22 +202,82 @@ class Application:
 
         gamble_button = customtkinter.CTkButton(self.theme, text="Gamble", fg_color="#094E18", corner_radius=100, hover_color="#042E0D", command=run.run_gamble)
         gamble_button.pack(pady=12.5)
+
         gamble2_button = customtkinter.CTkButton(self.theme, text="GO BIG OR GO HOME! (+10)", fg_color="#0084FF", hover_color="#025DB3", corner_radius=100, command=run.ruinyourlife)
         gamble2_button.pack(pady=12.5)
+
         gamble3_button = customtkinter.CTkButton(self.theme, text="GAMBLING IS MY LIFE FORCE!!! (+50)", fg_color="#7F0D8A", hover_color="#4E0855", corner_radius=100, command=run.loop)
         gamble3_button.pack(pady=12.5)
+
         gamble4_button = customtkinter.CTkButton(self.theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=run.holygamble)
         gamble4_button.pack(pady=12.5)
+
         loan_button = customtkinter.CTkButton(self.theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, hover_color="#067C06", command=run.bypass)
         loan_button.pack(pady=12.5)
+
         check_button = customtkinter.CTkButton(self.theme, text="Click to see values of winning", fg_color="#FF7300", hover_color="#AD4E00", corner_radius=100, command=run.values)
         check_button.pack(pady=12.5)
+
         logs_button = customtkinter.CTkButton(self.theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
         logs_button.pack(pady=12.5)
+
         debt_button = customtkinter.CTkButton(self.theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#0C817B", corner_radius=100, command=account.debt)
         debt_button.pack(pady=12.5)
+
         read_button = customtkinter.CTkButton(self.theme, text="Click to view history", fg_color="#9EA011", hover_color="#89B413", corner_radius=100, command=run.read)
         read_button.pack(pady=12.5)
+
+        custom_button = customtkinter.CTkButton(self.theme, text="Click to customize gambles.", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=run.custombuilder)
+        custom_button.pack(pady=12.5)
+    
+    def BuilderWidgets(self):
+        theme3 = customtkinter.CTkFrame(self.buildwindow, width=400, height=400, fg_color="#184279")
+        theme3.pack()
+        theme3.pack_propagate(False)
+
+        self.label2_var = customtkinter.CTkLabel(theme3, text=f"Amount is: 500\n Win chance is 5%\n Lose chance is 95%", font=("Times New Roman", 15))
+        self.label2_var.pack(pady=15)
+
+        self.value1 = 500
+        amountpicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=40, fg_color="#136CB6", from_=0, to=10000, command=app.on_slider_change1)
+        amountpicker.pack(pady=15)
+        
+        self.value2 = 5
+        winchancepicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=100, fg_color="#136CB6", from_=1, to=50, command=app.on_slider_change2)
+        winchancepicker.pack(pady=15)
+
+        self.value3 = 95
+        losechancepicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=100, fg_color="#136CB6", from_=1, to=50, command=app.on_slider_change3)
+        losechancepicker.pack(pady=15)
+
+        gamblecusto_button = customtkinter.CTkButton(theme3, text="Click to custom gamble (Amount works, not anything else.).", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=account.gamblecustom)
+        gamblecusto_button.pack(pady=15)
+
+    def on_slider_change1(self, value):
+        self.value1 = value
+        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
+
+    def on_slider_change2(self, value):
+        if self.value2 + self.value3 != 100:
+            self.value2 = 50
+            self.value3 = 50
+        self.value2 = value
+        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
+
+    def on_slider_change3(self, value):
+        if self.value2 + self.value3 != 100:
+            self.value2 = 50
+            self.value3 = 50
+        self.value3 = value
+        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
+
+    def Builder(self):
+        self.buildwindow = customtkinter.CTkToplevel(self.root)
+        self.buildwindow.title("Value selector")
+        self.buildwindow.geometry("400x400")
+        self.buildwindow.resizable(False, False)
+        self.buildwindow.grab_set()
+        app.BuilderWidgets()
 
 def startup():
     app.App()
