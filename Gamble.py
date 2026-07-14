@@ -37,12 +37,12 @@ class Account:
             app.label_var.configure(text=f"Your in too much debt to gamble.\n Your money is {self.money}")
         else:
             if self.highstakes == True:
-                if random.randint(1, 2) == 1:
+                if random.randint(1, 4) == 1:
                     self.money -= amount * app.value2
-                    app.label2_var.configure(text=f"Lost your multipiler chance\n Money is now {self.money}")
+                    app.label2_var.configure(text=f"Lost your multipiler chance\n Money is now {int(self.money)}")
                 else: 
                     self.money -= amount
-                    app.label2_var.configure(text=f"Won your multiplier chance\n Money is now {self.money}")
+                    app.label2_var.configure(text=f"Won your multiplier chance\n Money is now {int(self.money)}")
             else:
                 self.money -= amount
             print(f"Gambled ${amount}")
@@ -68,12 +68,12 @@ class Account:
     
     def gamblecustom(self):
         self.cap = True
-        if app.value2 == 2 or app.value2 >= 2:
+        if app.value2 >= 2:
             self.highstakes = True
             account.gamble(app.value1)
         else:
             account.gamble(app.value1)
-        app.label2_var.configure(text=f"Your money is now ${int(account.money)}")
+            app.label2_var.configure(text=f"Your money is now ${int(account.money)}")
 
     def debt(self):
         self.cap = True
