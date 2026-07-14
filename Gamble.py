@@ -17,7 +17,7 @@ class Account:
         self.lottery = 0
         self.takeout = 0
         self.factor = random.randint(1, 6)
-        self.bypassed = False
+        self.highstakes = False
 
     def gamble(self, amount):
         self.check = 1
@@ -36,27 +36,43 @@ class Account:
         if self.lost == True and self.cap == False:
             app.label_var.configure(text=f"Your in too much debt to gamble.\n Your money is {self.money}")
         else:
-            self.money -= amount
+            if self.highstakes == True:
+                if random.randint(1, 2) == 1:
+                    self.money -= amount * app.value2
+                    app.label2_var.configure(text=f"Lost your multipiler chance\n Money is now {self.money}")
+                else: 
+                    self.money -= amount
+                    app.label2_var.configure(text=f"Won your multiplier chance\n Money is now {self.money}")
+            else:
+                self.money -= amount
             print(f"Gambled ${amount}")
             if self.gambled == 1:
-                self.money += amount * 2
+                if self.highstakes == True:
+                    self.money += amount * app.value2 * 2
+                else:
+                    self.money += amount * 2
             if self.jackpot == 1:
-                self.money += 9999
+                if self.highstakes == True:
+                    self.money += 9999 * app.value2
+                else:
+                    self.money += 9999
             if self.lottery == 1:
-                self.money += 999999
-            if random.randint(1, 100) == 1:
-                self.money -= 99
-            if self.money <= 50000:
-                self.money += 500
+                if self.highstakes == True:
+                    self.money += 999999 * app.value2
+                else:
+                    self.money += 999999
             if self.money <= -9999:
                 self.lost = True
             if self.cap == True:
                 self.lost = False
     
     def gamblecustom(self):
-        self.bypassed = True
         self.cap = True
-        account.gamble(app.value1)
+        if app.value2 == 2 or app.value2 >= 2:
+            self.highstakes = True
+            account.gamble(app.value1)
+        else:
+            account.gamble(app.value1)
         app.label2_var.configure(text=f"Your money is now ${int(account.money)}")
 
     def debt(self):
@@ -235,41 +251,29 @@ class Application:
         theme3.pack()
         theme3.pack_propagate(False)
 
-        self.label2_var = customtkinter.CTkLabel(theme3, text=f"Amount is: 500\n Win chance is 5%\n Lose chance is 95%", font=("Times New Roman", 15))
+        self.label2_var = customtkinter.CTkLabel(theme3, text=f"Amount is: 500, Multipler is 1X", font=("Times New Roman", 15))
         self.label2_var.pack(pady=15)
 
         self.value1 = 500
-        amountpicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=40, fg_color="#136CB6", from_=0, to=10000, command=app.on_slider_change1)
+        amountpicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=40, fg_color="#136CB6", from_=1, to=10000, command=app.on_slider_change1)
+        amountpicker.set(500)
         amountpicker.pack(pady=15)
         
-        self.value2 = 5
-        winchancepicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=100, fg_color="#136CB6", from_=1, to=50, command=app.on_slider_change2)
-        winchancepicker.pack(pady=15)
-
-        self.value3 = 95
-        losechancepicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=100, fg_color="#136CB6", from_=1, to=50, command=app.on_slider_change3)
-        losechancepicker.pack(pady=15)
+        self.value2 = 1
+        multipilerpicker = customtkinter.CTkSlider(theme3, width=350, height=25, progress_color="#0B5F80", number_of_steps=10, fg_color="#136CB6", from_=1, to=10, command=app.on_slider_change2)
+        multipilerpicker.set(1)
+        multipilerpicker.pack(pady=15)
 
         gamblecusto_button = customtkinter.CTkButton(theme3, text="Click to custom gamble (Amount works, not anything else.).", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=account.gamblecustom)
         gamblecusto_button.pack(pady=15)
 
     def on_slider_change1(self, value):
         self.value1 = value
-        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
+        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Multipler is {int(self.value2)}X")
 
     def on_slider_change2(self, value):
-        if self.value2 + self.value3 != 100:
-            self.value2 = 50
-            self.value3 = 50
         self.value2 = value
-        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
-
-    def on_slider_change3(self, value):
-        if self.value2 + self.value3 != 100:
-            self.value2 = 50
-            self.value3 = 50
-        self.value3 = value
-        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Win chance is {int(self.value2)}\n Lose chance is {int(self.value3)}") #int to remove decimal
+        self.label2_var.configure(text=f"Amount is: {int(self.value1)}\n Multipler is {int(self.value2)}X")
 
     def Builder(self):
         self.buildwindow = customtkinter.CTkToplevel(self.root)
