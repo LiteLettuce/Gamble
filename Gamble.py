@@ -125,10 +125,7 @@ class Rerun():
             account.gamble(self.bigamount)
         else:
             account.gamble(self.amount)
-        if account.bypassed == True:
-            return 0
-        else:
-            app.label_var.configure(text=f"Your money is now ${account.money}")
+        app.label_var.configure(text=f"Your money is now ${account.money}")
         account.write()
 
     def ruinyourlife(self):
@@ -176,20 +173,49 @@ class Rerun():
                 with open(full_path, "rb") as file:
                     self.counter = sum(1 for _ in file)
         return self.counter
+    
     def custombuilder(self):
         app.Builder()
-
+    
+    def switching(self):
+        state = app.extra_switch.get()
+        if state == 1:
+            app.gamble_button.pack_forget()
+            app.gamble2_button.pack_forget()
+            app.gamble3_button.pack_forget()
+            app.gamble4_button.pack_forget()
+            app.loan_button.pack_forget()
+            app.check_button.pack(pady=12.5)
+            app.logs_button.pack(pady=12.5)
+            app.debt_button.pack(pady=12.5)
+            app.read_button.pack(pady=12.5)
+            app.custom_button.pack(pady=12.5)
+            app.extra_switch.pack_forget()
+            app.extra_switch.pack(pady=12.5)
+        else:
+            app.check_button.pack_forget()
+            app.logs_button.pack_forget()
+            app.debt_button.pack_forget()
+            app.read_button.pack_forget()
+            app.custom_button.pack_forget()
+            app.gamble_button.pack(pady=12.5)
+            app.gamble2_button.pack(pady=12.5)
+            app.gamble3_button.pack(pady=12.5)
+            app.gamble4_button.pack(pady=12.5)
+            app.loan_button.pack(pady=12.5)
+            app.extra_switch.pack_forget()
+            app.extra_switch.pack(pady=12.5)
 class Application:
     def __init__(self):
         self.root = customtkinter.CTk()
-        self.theme = customtkinter.CTkFrame(self.root, width=501, height=601, fg_color="#235DA8")
+        self.theme = customtkinter.CTkFrame(self.root, width=451, height=451, fg_color="#235DA8")
         self.theme.pack()
         self.theme.pack_propagate(False)
         self.label_var = customtkinter.CTkLabel(self.theme, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
 
     def App(self):
         self.root.title("Gambling")
-        self.root.geometry("500x600")
+        self.root.geometry("450x450")
         self.root.resizable(False, False)
         self.Widgets()
         self.root.mainloop()
@@ -216,35 +242,33 @@ class Application:
     def Widgets(self):
         self.label_var.pack(pady=12.5)
 
-        gamble_button = customtkinter.CTkButton(self.theme, text="Gamble", fg_color="#094E18", corner_radius=100, hover_color="#042E0D", command=run.run_gamble)
-        gamble_button.pack(pady=12.5)
+        self.gamble_button = customtkinter.CTkButton(self.theme, text="Gamble", fg_color="#094E18", corner_radius=100, hover_color="#042E0D", command=run.run_gamble)
+        self.gamble_button.pack(pady=12.5)
 
-        gamble2_button = customtkinter.CTkButton(self.theme, text="GO BIG OR GO HOME! (+10)", fg_color="#0084FF", hover_color="#025DB3", corner_radius=100, command=run.ruinyourlife)
-        gamble2_button.pack(pady=12.5)
+        self.gamble2_button = customtkinter.CTkButton(self.theme, text="GO BIG OR GO HOME! (+10)", fg_color="#0084FF", hover_color="#025DB3", corner_radius=100, command=run.ruinyourlife)
+        self.gamble2_button.pack(pady=12.5)
 
-        gamble3_button = customtkinter.CTkButton(self.theme, text="GAMBLING IS MY LIFE FORCE!!! (+50)", fg_color="#7F0D8A", hover_color="#4E0855", corner_radius=100, command=run.loop)
-        gamble3_button.pack(pady=12.5)
+        self.gamble3_button = customtkinter.CTkButton(self.theme, text="GAMBLING IS MY LIFE FORCE!!! (+50)", fg_color="#7F0D8A", hover_color="#4E0855", corner_radius=100, command=run.loop)
+        self.gamble3_button.pack(pady=12.5)
 
-        gamble4_button = customtkinter.CTkButton(self.theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=run.holygamble)
-        gamble4_button.pack(pady=12.5)
+        self.gamble4_button = customtkinter.CTkButton(self.theme, text="THE GAMBLE OF HISTORY!!!!! (+250)", fg_color="#C41B1B", hover_color="#801010", corner_radius=100, command=run.holygamble)
+        self.gamble4_button.pack(pady=12.5)
 
-        loan_button = customtkinter.CTkButton(self.theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, hover_color="#067C06", command=run.bypass)
-        loan_button.pack(pady=12.5)
+        self.loan_button = customtkinter.CTkButton(self.theme, text="Click to get a loan", fg_color="#0BC20B", corner_radius=100, hover_color="#067C06", command=run.bypass)
+        self.loan_button.pack(pady=12.5)
 
-        check_button = customtkinter.CTkButton(self.theme, text="Click to see values of winning", fg_color="#FF7300", hover_color="#AD4E00", corner_radius=100, command=run.values)
-        check_button.pack(pady=12.5)
+        self.extra_switch = customtkinter.CTkSwitch(self.theme, text="Switch to extra buttons", command=run.switching)
+        self.extra_switch.pack(pady=12.5)
 
-        logs_button = customtkinter.CTkButton(self.theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
-        logs_button.pack(pady=12.5)
+        self.check_button = customtkinter.CTkButton(self.theme, text="Click to see values of winning", fg_color="#FF7300", hover_color="#AD4E00", corner_radius=100, command=run.values)
 
-        debt_button = customtkinter.CTkButton(self.theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#0C817B", corner_radius=100, command=account.debt)
-        debt_button.pack(pady=12.5)
+        self.logs_button = customtkinter.CTkButton(self.theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
 
-        read_button = customtkinter.CTkButton(self.theme, text="Click to view history", fg_color="#9EA011", hover_color="#89B413", corner_radius=100, command=run.read)
-        read_button.pack(pady=12.5)
+        self.debt_button = customtkinter.CTkButton(self.theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#0C817B", corner_radius=100, command=account.debt)
 
-        custom_button = customtkinter.CTkButton(self.theme, text="Click to customize gambles.", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=run.custombuilder)
-        custom_button.pack(pady=12.5)
+        self.read_button = customtkinter.CTkButton(self.theme, text="Click to view history", fg_color="#9EA011", hover_color="#89B413", corner_radius=100, command=run.read)
+
+        self.custom_button = customtkinter.CTkButton(self.theme, text="Click to customize gambles.", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=run.custombuilder)
     
     def BuilderWidgets(self):
         theme3 = customtkinter.CTkFrame(self.buildwindow, width=400, height=400, fg_color="#184279")
