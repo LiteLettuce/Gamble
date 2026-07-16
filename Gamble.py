@@ -1,4 +1,4 @@
-import random, os, sys, customtkinter, datetime
+import random, os, customtkinter, datetime
 
 direct = "GAMBLINGLOG"
 filed = "gamblinglog.txt"
@@ -10,7 +10,6 @@ class Account:
     def __init__(self, money):
         self.money = money
         self.lost = False
-        self.check = 0
         self.cap = False
         self.gambled = 0
         self.jackpot = 0
@@ -18,9 +17,11 @@ class Account:
         self.takeout = 0
         self.factor = random.randint(1, 6)
         self.highstakes = False
+        self.check = 0
+        self.gambleinfo = "Waiting for gambles..."
 
     def gamble(self, amount):
-        self.check = 1
+        self.check = 1 #checking if you gambled
         if self.factor == 1:
             self.gambled = random.randint(1, 6)
             self.jackpot = random.randint(1, 100)
@@ -35,32 +36,45 @@ class Account:
             self.lottery = random.randint(1, 750)
         if self.lost == True and self.cap == False:
             app.label_var.configure(text=f"Your in too much debt to gamble.\n Your money is {self.money}")
-        else:
+        else:    
             if self.highstakes == True:
                 if random.randint(1, 4) == 1:
                     self.money -= amount * app.value2
                     app.label2_var.configure(text=f"Lost your multipiler chance\n Money is now {int(self.money)}")
-                else: 
+                else:
                     self.money -= amount
                     app.label2_var.configure(text=f"Won your multiplier chance\n Money is now {int(self.money)}")
             else:
                 self.money -= amount
-            print(f"Gambled ${amount}")
+
+            entry = f"Gambled ${amount}"
+
             if self.gambled == 1:
                 if self.highstakes == True:
-                    self.money += amount * app.value2 * 2
+                    self.money += amount * 2 * app.value2
                 else:
                     self.money += amount * 2
+                entry += " -> Won prize (x2)"
             if self.jackpot == 1:
                 if self.highstakes == True:
                     self.money += 9999 * app.value2
                 else:
                     self.money += 9999
+                entry += " -> JACKPOT (+9999)"
             if self.lottery == 1:
                 if self.highstakes == True:
                     self.money += 999999 * app.value2
                 else:
                     self.money += 999999
+                entry += " -> LOTTERY (+999999)"
+
+            if self.gambleinfo == "Waiting for gambles...":
+                self.gambleinfo = entry
+            else:
+                self.gambleinfo += f"\n{entry}"
+
+            app.log_gamble(entry)
+
             if self.money <= -9999:
                 self.lost = True
             if self.cap == True:
@@ -71,6 +85,7 @@ class Account:
         if app.value2 >= 2:
             self.highstakes = True
             account.gamble(app.value1)
+            self.highstakes = False
         else:
             account.gamble(app.value1)
             app.label2_var.configure(text=f"Your money is now ${int(account.money)}")
@@ -79,16 +94,13 @@ class Account:
         self.cap = True
 
     def loan(self, amount):
-        self.loanmoney = False
         if self.takeout >= 5:
             app.label_var.configure(text="You've taken a loan too many times.")
-            if self.lost == True:
-                app.label_var.configure(text=f"Your in too much debt to gamble.\n Your money is {self.money}")
         else:
             self.money += amount
             self.takeout += 1
             app.label_var.configure(text=f"Your money is now ${self.money}")
-        print(f"Got loan of {amount}")
+            print(f"Got loan of {amount}")
 
     def write(self):
         run.check()
@@ -125,7 +137,10 @@ class Rerun():
             account.gamble(self.bigamount)
         else:
             account.gamble(self.amount)
-        app.label_var.configure(text=f"Your money is now ${account.money}")
+        if account.lost and account.cap == False:
+            pass
+        else:
+            app.label_var.configure(text=f"Your money is now ${account.money}")
         account.write()
 
     def ruinyourlife(self):
@@ -154,12 +169,6 @@ class Rerun():
         else:
             app.label_var.configure(text="Values are the normal.")
 
-    def log(self):
-        direc = os.path.dirname(os.path.abspath(sys.argv[0]))
-        path = os.path.join(direc, "GAMBLINGLOG")
-        path = os.path.realpath(path)
-        os.startfile(path)
-
     def read(self):
         if account.check == 1:
             app.open_history()
@@ -186,17 +195,17 @@ class Rerun():
             app.gamble4_button.pack_forget()
             app.loan_button.pack_forget()
             app.check_button.pack(pady=12.5)
-            app.logs_button.pack(pady=12.5)
             app.debt_button.pack(pady=12.5)
             app.read_button.pack(pady=12.5)
+            app.detail_button.pack(pady=12.5)
             app.custom_button.pack(pady=12.5)
             app.extra_switch.pack_forget()
             app.extra_switch.pack(pady=12.5)
         else:
             app.check_button.pack_forget()
-            app.logs_button.pack_forget()
             app.debt_button.pack_forget()
             app.read_button.pack_forget()
+            app.detail_button.pack_forget()
             app.custom_button.pack_forget()
             app.gamble_button.pack(pady=12.5)
             app.gamble2_button.pack(pady=12.5)
@@ -205,6 +214,7 @@ class Rerun():
             app.loan_button.pack(pady=12.5)
             app.extra_switch.pack_forget()
             app.extra_switch.pack(pady=12.5)
+
 class Application:
     def __init__(self):
         self.root = customtkinter.CTk()
@@ -212,6 +222,7 @@ class Application:
         self.theme.pack()
         self.theme.pack_propagate(False)
         self.label_var = customtkinter.CTkLabel(self.theme, text=f"Your money is ${account.money}", font=("Times New Roman", 15))
+        self.gambleinfo_box = None
 
     def App(self):
         self.root.title("Gambling")
@@ -238,6 +249,39 @@ class Application:
         textbox.pack(padx=10, pady=10)
         textbox.insert("0.0", content)
         textbox.configure(state="disabled")
+    
+    def advancedgamble(self):
+        window3 = customtkinter.CTkToplevel(self.root)
+        window3.title("Advanced Gamble Panel")
+        window3.geometry("400x400")
+        window3.resizable(False, False)
+
+        theme4 = customtkinter.CTkFrame(window3, width=401, height=401, fg_color="#15A2BB")
+        theme4.pack()
+        theme4.pack_propagate(False)
+
+        gambleinfo = customtkinter.CTkTextbox(theme4, width=350, height=350, fg_color="#15A2BB", font=("Times New Roman", 13))
+        gambleinfo.pack()
+        gambleinfo.insert("0.0", account.gambleinfo)
+        gambleinfo.configure(state="disabled")
+
+        self.gambleinfo_box = gambleinfo
+
+        def clear_ref():
+            self.gambleinfo_box = None
+            window3.destroy()
+        window3.protocol("WM_DELETE_WINDOW", clear_ref)
+
+    def log_gamble(self, entry):
+        if self.gambleinfo_box is not None:
+            try:
+                if self.gambleinfo_box.winfo_exists():
+                    self.gambleinfo_box.configure(state="normal")
+                    self.gambleinfo_box.insert("end", f"\n{entry}")
+                    self.gambleinfo_box.see("end")
+                    self.gambleinfo_box.configure(state="disabled")
+            except Exception:
+                self.gambleinfo_box = None
 
     def Widgets(self):
         self.label_var.pack(pady=12.5)
@@ -262,11 +306,11 @@ class Application:
 
         self.check_button = customtkinter.CTkButton(self.theme, text="Click to see values of winning", fg_color="#FF7300", hover_color="#AD4E00", corner_radius=100, command=run.values)
 
-        self.logs_button = customtkinter.CTkButton(self.theme, text="Click to open logs", fg_color="#19181D", hover_color="#000000", corner_radius=100, command=run.log)
-
         self.debt_button = customtkinter.CTkButton(self.theme, text="Click to remove debt limits.", fg_color="#09C9BF", hover_color="#0C817B", corner_radius=100, command=account.debt)
 
         self.read_button = customtkinter.CTkButton(self.theme, text="Click to view history", fg_color="#9EA011", hover_color="#89B413", corner_radius=100, command=run.read)
+
+        self.detail_button = customtkinter.CTkButton(self.theme, text="Click to show advanced gambles", fg_color="#6000DD", hover_color="#4000DD", corner_radius=100, command=app.advancedgamble)
 
         self.custom_button = customtkinter.CTkButton(self.theme, text="Click to customize gambles.", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=run.custombuilder)
     
@@ -288,7 +332,7 @@ class Application:
         multipilerpicker.set(1)
         multipilerpicker.pack(pady=15)
 
-        gamblecusto_button = customtkinter.CTkButton(theme3, text="Click to custom gamble (Amount works, not anything else.).", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=account.gamblecustom)
+        gamblecusto_button = customtkinter.CTkButton(theme3, text="Click to custom gamble", fg_color="#A71611", hover_color="#7C0F0C", corner_radius=100, command=account.gamblecustom)
         gamblecusto_button.pack(pady=15)
 
     def on_slider_change1(self, value):
